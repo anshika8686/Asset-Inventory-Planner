@@ -12,7 +12,6 @@ async function startServer() {
 
     const server = app.listen(PORT, () => {
       console.log("Server is listening!");
-      console.log("Address:", server.address());
     });
 
     server.on("error", (error) => {
