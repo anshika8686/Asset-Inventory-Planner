@@ -1,9 +1,11 @@
 
 const express = require("express");
+const cookieParser=require("cookie-parser")
 const app = express();
 
+
 app.use(express.json());
-console.log("Express app created:", typeof app.listen);
+app.use(cookieParser())
 
 app.get("/", (req, res) => {
   res.send("AssetWise API is running!");

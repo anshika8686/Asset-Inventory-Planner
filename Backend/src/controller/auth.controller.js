@@ -81,6 +81,13 @@ async function loginController(req, res) {
       { expiresIn: "1d" }
     );
 
+    //store the token in cookie
+    res.cookie("token", token,{
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  maxAge: 24 * 60 * 60 * 1000})
+
     return res.status(200).json({
       message: "Login successful",
       user: {
@@ -98,8 +105,36 @@ async function loginController(req, res) {
   }
 }
 
+async function getmeController(req, res) {
+  res.set("Cache-Control", "no-store");
+
+  try {
+    const user = await User.findById(req.user.userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found"
+      });
+    }
+
+    return res.status(200).json({
+      message: "User details fetched successfully",
+      user: {
+        name: user.name,
+        email: user.email
+      }
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message
+    });
+  }
+}
+
 
 
 module.exports = { signupController,
-  loginController
+  loginController,
+  getmeController
  };
