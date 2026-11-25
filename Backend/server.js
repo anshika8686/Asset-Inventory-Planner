@@ -1,22 +1,27 @@
 
-const express = require("express");
-const connectDB = require("./src/config/db");
 require("dotenv").config();
-connectDB();
 
+const app = require("./src/app");
+const connectToDb = require("./src/config/db");
 
-const app = express();
+const PORT = 4000;
 
-// Middleware
-app.use(express.json());
+async function startServer() {
+  try {
+    await connectToDb();
 
-// Test route
-app.get("/", (req, res) => {
-  res.send("AssetWise API is running!");
-});
+    const server = app.listen(PORT, () => {
+      console.log("Server is listening!");
+      console.log("Address:", server.address());
+    });
 
-const PORT = process.env.PORT || 3000;
+    server.on("error", (error) => {
+      console.error("SERVER ERROR:", error);
+    });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  } catch (error) {
+    console.error("STARTUP ERROR:", error);
+  }
+}
+
+startServer();
