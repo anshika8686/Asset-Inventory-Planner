@@ -13,7 +13,9 @@ app.get("/", (req, res) => {
 
 const authRouter = require("./routes/auth.routes");
 const assetRouter=require("./routes/asset.routes");
+const assetConfigrouter=require("./routes/assetConfig.routes")
 app.use("/api/auth", authRouter);
 app.use("/api/asset",assetRouter);
+app.use("/api/config",assetConfigrouter)
 
 module.exports = app;
