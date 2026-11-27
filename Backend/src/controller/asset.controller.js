@@ -105,15 +105,35 @@ async function createAssetController(req, res) {
 // Get all assets
 async function getAllAssetsController(req, res) {
   try {
-    const assets = await Asset.find().sort({ createdAt: -1 });
+    console.log("Search query:", req.query);
+    const { assetId } = req.query;
+
+    // Build search filter
+    const filter = {};
+
+    if (assetId) {
+      filter.assetId = {
+        $regex: assetId,
+        $options: "i"
+      };
+    }
+
+    console.log("MongoDB filter:", filter);
+    const assets = await Asset.find(filter).sort({
+      createdAt: -1
+    });
 
     return res.status(200).json({
-      assets: assets.map(formatAsset),
+      assets: assets.map(formatAsset)
     });
+
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({
+      message: error.message
+    });
   }
 }
+
 
 // Get a single asset
 async function getAssetController(req, res) {

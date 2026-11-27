@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const AssetRouter = express.Router();
 
 const identifyUser = require("../middleware/auth.middleware");
 
@@ -12,12 +12,12 @@ const {
 } = require("../controller/asset.controller");
 
 // All asset routes require authentication
-router.use(identifyUser);
+AssetRouter.use(identifyUser);
 
-router.post("/create", identifyUser, createAssetController);
-router.get("/get-all",identifyUser,  getAllAssetsController);
-router.get("/get/:id",identifyUser,  getAssetController);
-router.put("/update/:id",identifyUser,  updateAssetController);
-router.delete("/delete/:id",identifyUser,  deleteAssetController);
+AssetRouter.post("/create", identifyUser, createAssetController);
+AssetRouter.get("/get-all",identifyUser,  getAllAssetsController);
+AssetRouter.get("/get/:id",identifyUser,  getAssetController);
+AssetRouter.put("/update/:id",identifyUser,  updateAssetController);
+AssetRouter.delete("/delete/:id",identifyUser,  deleteAssetController);
 
-module.exports = router;
+module.exports = AssetRouter;
