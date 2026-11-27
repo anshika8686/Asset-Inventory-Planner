@@ -75,19 +75,29 @@ const assetSchema = new mongoose.Schema(
           type: Date,
           default: Date.now,
         },
-      condition: {
+        condition: {
+          type: String,
+          enum: ["Normal", "Caution", "Warning", "Critical", "Not Assessed"],
+          default: "Not Assessed",
+        },
+
+        assessmentType: {
+          type: String,
+          enum: ["automatic", "manual", "not-assessed"],
+          default: "not-assessed",
+        },
+      },
+    ],
+    healthScore: {
+      type: Number,
+      default: 0,
+    },
+    
+    healthStatus: {
       type: String,
       enum: ["Normal", "Caution", "Warning", "Critical", "Not Assessed"],
       default: "Not Assessed",
     },
-
-    assessmentType: {
-      type: String,
-      enum: ["automatic", "manual", "not-assessed"],
-      default: "not-assessed",
-    },
-  },
-  ],
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
