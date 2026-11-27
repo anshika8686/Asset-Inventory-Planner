@@ -1,7 +1,6 @@
-
 const Asset = require("../model/asset.model");
-const {evaluateCondition}=require("../utils/conditionEvaluator")
-const {calculateAssetHealth}=require("../utils/calculateAssetHealth")
+const { evaluateCondition } = require("../utils/conditionEvaluator");
+const { calculateAssetHealth } = require("../utils/calculateAssetHealth");
 
 // Calculate asset age in years
 function calculateAssetAge(installationDate) {
@@ -10,7 +9,7 @@ function calculateAssetAge(installationDate) {
   const ageInMilliseconds = Date.now() - new Date(installationDate).getTime();
 
   return Number(
-    (ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25)).toFixed(2)
+    (ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25)).toFixed(2),
   );
 }
 
@@ -46,28 +45,26 @@ async function createAssetController(req, res) {
 
     const calculatedDate = calculateNextMaintenanceDate(
       assetData.lastMaintenanceDate,
-      assetData.maintenanceIntervalDays
+      assetData.maintenanceIntervalDays,
     );
-    
+
     const evaluatedReadings = (assetData.readings || []).map((reading) => {
-    const result = evaluateCondition(
-    assetData.category,
-    reading.parameter,
-    reading.value,
-    reading.manualCondition
-  );
+      const result = evaluateCondition(
+        assetData.category,
+        reading.parameter,
+        reading.value,
+        reading.manualCondition,
+      );
 
- 
-  return {
-    ...reading,
-    condition: result.condition,
-    assessmentType: result.assessmentType
-  };
-});
+      return {
+        ...reading,
+        condition: result.condition,
+        assessmentType: result.assessmentType,
+      };
+    });
 
- const { healthScore, healthStatus } =
-  calculateAssetHealth(evaluatedReadings);
-
+    const { healthScore, healthStatus } =
+      calculateAssetHealth(evaluatedReadings);
 
     const asset = await Asset.create({
       ...assetData,
@@ -76,14 +73,13 @@ async function createAssetController(req, res) {
       healthStatus,
       nextMaintenanceDate: calculatedDate,
       createdBy: req.user.userId,
-      updatedBy: req.user.userId
+      updatedBy: req.user.userId,
     });
 
     return res.status(201).json({
       message: "Asset created successfully",
-      asset: formatAsset(asset)
+      asset: formatAsset(asset),
     });
-
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -95,7 +91,7 @@ async function getAllAssetsController(req, res) {
     const assets = await Asset.find().sort({ createdAt: -1 });
 
     return res.status(200).json({
-      assets: assets.map(formatAsset)
+      assets: assets.map(formatAsset),
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -112,7 +108,7 @@ async function getAssetController(req, res) {
     }
 
     return res.status(200).json({
-      asset: formatAsset(asset)
+      asset: formatAsset(asset),
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -139,9 +135,34 @@ async function updateAssetController(req, res) {
 
     Object.assign(asset, updates);
 
+    if (req.body.readings) {
+      const evaluatedReadings = req.body.readings.map((reading) => {
+        const result = evaluateCondition(
+          asset.category,
+          reading.parameter,
+          reading.value,
+          reading.manualCondition,
+        );
+
+        return {
+          ...reading,
+          condition: result.condition,
+          assessmentType: result.assessmentType,
+        };
+      });
+
+      asset.readings = evaluatedReadings;
+
+      const { healthScore, healthStatus } =
+        calculateAssetHealth(evaluatedReadings);
+
+      asset.healthScore = healthScore;
+      asset.healthStatus = healthStatus;
+    }
+
     asset.nextMaintenanceDate = calculateNextMaintenanceDate(
       asset.lastMaintenanceDate,
-      asset.maintenanceIntervalDays
+      asset.maintenanceIntervalDays,
     );
 
     asset.updatedBy = req.user.userId;
@@ -150,7 +171,7 @@ async function updateAssetController(req, res) {
 
     return res.status(200).json({
       message: "Asset updated successfully",
-      asset: formatAsset(asset)
+      asset: formatAsset(asset),
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -167,7 +188,7 @@ async function deleteAssetController(req, res) {
     }
 
     return res.status(200).json({
-      message: "Asset deleted successfully"
+      message: "Asset deleted successfully",
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -179,5 +200,5 @@ module.exports = {
   getAllAssetsController,
   getAssetController,
   updateAssetController,
-  deleteAssetController
+  deleteAssetController,
 };
