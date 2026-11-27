@@ -1,3 +1,4 @@
+const { calculateMaintenancePriority } = require("./calculatePriorityIndex");
 
 // Maps each reading condition to a numerical score
 function getConditionScore(condition) {
@@ -63,4 +64,5 @@ function calculateAssetHealth(readings = []) {
 module.exports = {
   getConditionScore,
   calculateAssetHealth,
+ 
 };

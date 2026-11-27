@@ -92,12 +92,23 @@ const assetSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    
+
     healthStatus: {
       type: String,
       enum: ["Normal", "Caution", "Warning", "Critical", "Not Assessed"],
       default: "Not Assessed",
     },
+
+    maintenancePriorityScore: {
+  type: Number,
+  default: null
+},
+
+maintenancePriority: {
+  type: String,
+  enum: ["Low", "Medium", "High", "Critical", "Not Assessed"],
+  default: "Not Assessed"
+},
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
