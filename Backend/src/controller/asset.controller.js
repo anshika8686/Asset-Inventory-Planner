@@ -1,5 +1,6 @@
 
 const Asset = require("../model/asset.model");
+const {evaluateCondition}=require("../utils/conditionEvaluator")
 
 // Calculate asset age in years
 function calculateAssetAge(installationDate) {
@@ -46,9 +47,25 @@ async function createAssetController(req, res) {
       assetData.lastMaintenanceDate,
       assetData.maintenanceIntervalDays
     );
+    
+    const evaluatedReadings = (assetData.readings || []).map((reading) => {
+    const result = evaluateCondition(
+    assetData.category,
+    reading.parameter,
+    reading.value,
+    reading.manualCondition
+  );
+
+  return {
+    ...reading,
+    condition: result.condition,
+    assessmentType: result.assessmentType
+  };
+});
 
     const asset = await Asset.create({
       ...assetData,
+       readings: evaluatedReadings,
       nextMaintenanceDate: calculatedDate,
       createdBy: req.user.userId,
       updatedBy: req.user.userId

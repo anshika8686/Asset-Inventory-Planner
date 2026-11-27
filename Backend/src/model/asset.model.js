@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const assetSchema = new mongoose.Schema(
@@ -7,13 +6,13 @@ const assetSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      trim: true
+      trim: true,
     },
 
     assetName: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
     category: {
@@ -24,8 +23,8 @@ const assetSchema = new mongoose.Schema(
         "Power Cable",
         "Transformer",
         "Rotating Machine",
-        "Switchgear"
-      ]
+        "Switchgear",
+      ],
     },
 
     manufacturer: String,
@@ -35,64 +34,75 @@ const assetSchema = new mongoose.Schema(
     serialNumber: String,
 
     installationDate: {
-      type: Date
+      type: Date,
     },
 
     // Optional override when a verified service-life value is available
     expectedServiceLifeYears: {
       type: Number,
-      min: 0.1
+      min: 0.1,
     },
 
     criticality: {
       type: String,
       enum: ["Low", "Medium", "High", "Very High"],
-      required: true
+      required: true,
     },
 
     lastMaintenanceDate: {
-      type: Date
+      type: Date,
     },
 
-    nextMaintenanceDate:{
-        type:Date
+    nextMaintenanceDate: {
+      type: Date,
     },
 
     // Maintenance interval for this particular asset
     maintenanceIntervalDays: {
       type: Number,
-      min: 1
+      min: 1,
     },
 
     readings: [
       {
         parameter: {
           type: String,
-          required: true
+          required: true,
         },
         value: mongoose.Schema.Types.Mixed,
         unit: String,
         recordedAt: {
           type: Date,
-          default: Date.now
-        }
-      }
-    ],
+          default: Date.now,
+        },
+      condition: {
+      type: String,
+      enum: ["Normal", "Caution", "Warning", "Critical", "Not Assessed"],
+      default: "Not Assessed",
+    },
+
+    assessmentType: {
+      type: String,
+      enum: ["automatic", "manual", "not-assessed"],
+      default: "not-assessed",
+    },
+  },
+  ],
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
 
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    }
+      ref: "User",
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
 const Asset = mongoose.model("Asset", assetSchema);
