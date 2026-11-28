@@ -132,9 +132,29 @@ async function getmeController(req, res) {
   }
 }
 
+async function logoutController(req, res) {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  maxAge: 24 * 60 * 60 * 1000
+    });
+
+    return res.status(200).json({
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Logout failed",
+    });
+  }
+}
+
 
 
 module.exports = { signupController,
   loginController,
-  getmeController
+  getmeController,
+  logoutController
  };
